@@ -1,0 +1,70 @@
+# libtcod samples linux makefile
+# to build debug version, run "make -f makefile-samples-linux debug"
+# to build release version, run "make -f makefile-samples-linux release"
+SRCDIR=src
+INCDIR=tcod-headers
+CFLAGS=$(FLAGS) -I$(INCDIR) -I$(SRCDIR) -Wall -std=c++11
+CC=clang
+CPP=clang++
+TEMP=/tmp
+.SUFFIXES: .o .h .c .hpp .cpp
+
+$(TEMP)/ouruo/debug/%.o : $(SRCDIR)/%.cpp
+	$(CPP) $(CFLAGS) -g -stdlib=libc++ -o $@ -c $< 
+$(TEMP)/ouruo/release/%.o : $(SRCDIR)/%.cpp
+	$(CPP) $(CFLAGS) -O3 -stdlib=libc++ -o $@ -c $< 
+
+CPP_OBJS_DEBUG= \
+	$(TEMP)/ouruo/debug/main.o \
+	$(TEMP)/ouruo/debug/actor.o \
+	$(TEMP)/ouruo/debug/ai.o \
+	$(TEMP)/ouruo/debug/attacker.o \
+	$(TEMP)/ouruo/debug/attribute.o \
+	$(TEMP)/ouruo/debug/class.o \
+	$(TEMP)/ouruo/debug/container.o \
+	$(TEMP)/ouruo/debug/destructible.o \
+	$(TEMP)/ouruo/debug/engine.o \
+	$(TEMP)/ouruo/debug/gui.o \
+	$(TEMP)/ouruo/debug/map.o \
+	$(TEMP)/ouruo/debug/persistent.o \
+	$(TEMP)/ouruo/debug/pickable.o \
+	$(TEMP)/ouruo/debug/skill.o
+
+CPP_OBJS_RELEASE= \
+	$(TEMP)/ouruo/release/main.o \
+	$(TEMP)/ouruo/release/actor.o \
+	$(TEMP)/ouruo/release/ai.o \
+	$(TEMP)/ouruo/release/attacker.o \
+	$(TEMP)/ouruo/release/attribute.o \
+	$(TEMP)/ouruo/release/class.o \
+	$(TEMP)/ouruo/release/container.o \
+	$(TEMP)/ouruo/release/destructible.o \
+	$(TEMP)/ouruo/release/engine.o \
+	$(TEMP)/ouruo/release/gui.o \
+	$(TEMP)/ouruo/release/map.o \
+	$(TEMP)/ouruo/release/persistent.o \
+	$(TEMP)/ouruo/release/pickable.o \
+	$(TEMP)/ouruo/release/skill.o
+
+all : debug release
+
+debug : ouruo-dbg
+
+release : ouruo
+
+$(TEMP)/ouruo/debug :
+	\mkdir -p $@
+
+$(TEMP)/ouruo/release :
+	\mkdir -p $@
+
+ouruo : $(TEMP)/ouruo/release $(CPP_OBJS_RELEASE)
+	$(CPP) $(CPP_OBJS_RELEASE) -stdlib=libc++ -o $@ -L. -ltcod -ltcodxx $(CFLAGS) -Wl,-rpath,.
+	upx ./ouruo
+
+ouruo-dbg : $(TEMP)/ouruo/debug $(CPP_OBJS_DEBUG)
+	$(CPP) $(CPP_OBJS_DEBUG) -stdlib=libc++ -o $@ -L. -ltcod_debug -ltcodxx_debug $(CFLAGS) -Wl,-rpath,.
+
+clean :
+	\rm -f $(CPP_OBJS_RELEASE) ouruo $(CPP_OBJS_DEBUG) ouruo-dbg
+
