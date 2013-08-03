@@ -74,9 +74,8 @@ void Engine::Update()
     }
     player_->Update();
     if (gameStatus == NEW_TURN) {
-	    for (Actor **iterator=actors_.begin(); iterator != actors_.end(); iterator++) {
-	        Actor *actor=*iterator;
-	        if ( actor != player_ ) {
+    	for (Actor *actor : actors_) {
+	        if (actor != player_) {
 	            actor->Update();
 	        }
 	    }
@@ -89,8 +88,9 @@ void Engine::Render()
 	// draw the map
 	map_->Render();
 	// draw the actors
-	for (Actor **iterator=actors_.begin(); iterator != actors_.end(); iterator++) {
-		Actor *actor=*iterator;
+	//for (Actor **iterator=actors_.begin(); iterator != actors_.end(); iterator++) {
+	//	Actor *actor=*iterator;
+	for (Actor *actor : actors_) {
 		if ((actor != player_) && (map_->IsInFov(actor->x_,actor->y_))) {
 	        actor->Render();
 	    }
@@ -108,8 +108,7 @@ void Engine::SendToBack(Actor *actor)
 
 Actor *Engine::GetActor(int32_t x, int32_t y) const
 {
-	for (Actor **iterator=actors_.begin(); iterator != actors_.end(); iterator++) {
-		Actor *actor = *iterator;
+	for (Actor *actor : actors_) {
 		if ((actor->x_ == x) && (actor->y_ == y) && (actor->destructible_) && (!actor->destructible_->IsDead())) {
 			return actor;
 		}
@@ -122,8 +121,7 @@ Actor *Engine::GetClosestMonster(int32_t x, int32_t y, float range) const
 	Actor *closest = NULL;
 	float bestDistance = 1E6f;
 
-	for (Actor **iterator=actors_.begin(); iterator != actors_.end(); iterator++) {
-		Actor *actor = *iterator;
+	for (Actor *actor : actors_) {
 		if ((actor != player_) && (actor->destructible_) && (!actor->destructible_->IsDead())) {
 			float distance = actor->GetDistance(x, y);
 			if ((distance < bestDistance) && ((distance <= range) || (range == 0.0f))) {

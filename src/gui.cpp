@@ -60,8 +60,8 @@ void Gui::Render()
 	// draw the message log
 	int32_t y = 1;
 	float colorCoef = 0.4f;
-	for (message **it = log_.begin(); it != log_.end(); it++) {
-		message *msg = *it;
+
+	for (message *msg : log_) {
 		con_->setDefaultForeground(msg->col * colorCoef);
 		con_->print(MSG_X, y, msg->text);
 		y++;
@@ -113,8 +113,7 @@ void Gui::RenderMouseLook()
 	char buf[128] = "";
 	bool first = true;
 
-	for (Actor **it = engine.actors_.begin(); it != engine.actors_.end(); it++) {
-		Actor *actor = *it;
+	for (Actor *actor : engine.actors_) {
 		// find actors under the mouse cursor
 		if ((actor->x_ == engine.mouse_.cx) && (actor->y_ == engine.mouse_.cy)) {
 			if (!first) {
@@ -191,17 +190,6 @@ Menu::MenuItemCode Menu::Pick()
 		img.blit2x(TCODConsole::root, 0, 0);
 		int32_t currentItem = 0;
 
-		/*
-		for (MenuItem **it = items_.begin(); it != items_.end(); it++) {
-			if (currentItem == selectedItem) {
-				TCODConsole::root->setDefaultForeground(TCODColor::lighterOrange);
-			} else {
-				TCODConsole::root->setDefaultForeground(TCODColor::lightGrey);
-			}
-			TCODConsole::root->print(10, 10 + currentItem * 3, (*it)->label);
-			currentItem++;
-		}
-		*/
 		for (MenuItem *it : items_) {
 			if (currentItem == selectedItem) {
 				TCODConsole::root->setDefaultForeground(TCODColor::lighterOrange);

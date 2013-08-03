@@ -150,9 +150,7 @@ bool PlayerAi::MoveOrAttack(Actor *owner, int32_t targetx, int32_t targety)
 		return false;
 	}
 	// look for living actors to attack
-	for (Actor **iterator = engine.actors_.begin();	iterator != engine.actors_.end(); iterator++) {
-		Actor *actor=*iterator;
-
+	for (Actor *actor : engine.actors_) {
 		if ((actor->destructible_) && (!actor->destructible_->IsDead()) && (actor->x_ == targetx) && (actor->y_ == targety)) {
 			owner->attacker_->Attack(owner, actor);
 			return false;
@@ -160,12 +158,11 @@ bool PlayerAi::MoveOrAttack(Actor *owner, int32_t targetx, int32_t targety)
 	}
 
 	// look for corpses or items
-	for (Actor **iterator=engine.actors_.begin(); iterator != engine.actors_.end(); iterator++) {
-		Actor *actor = *iterator;
+	for (Actor *actor : engine.actors_) {
 		bool corpseOrItem = ((actor->destructible_ && actor->destructible_->IsDead()) || actor->pickable_);
 
 		if ((corpseOrItem) && (actor->x_ == targetx) && (actor->y_ == targety)) {
-			engine.gui_->Message(TCODColor::lightGrey, "Qui c\'è un(a) %s.", actor->name_);
+			engine.gui_->Message(TCODColor::lightGrey, "Qui c\'e\' un(a) %s.", actor->name_);
 		}
 	}
 	owner->x_ = targetx;
@@ -188,8 +185,7 @@ void PlayerAi::HandleActionKey(Actor *owner, int32_t ascii)
 	case 'g': { // pickup item
 		bool found = false;
 
-		for (Actor **iterator=engine.actors_.begin(); iterator != engine.actors_.end(); iterator++) {
-			Actor *actor = *iterator;
+		for (Actor *actor : engine.actors_) {
 			if ((actor->pickable_) && (actor->x_ == owner->x_) && (actor->y_ == owner->y_)) {
 				if (actor->pickable_->Pick(actor,owner)) {
 					found = true;
@@ -197,12 +193,12 @@ void PlayerAi::HandleActionKey(Actor *owner, int32_t ascii)
 					break;
 				} else if (!found) {
 					found = true;
-					engine.gui_->Message(TCODColor::red, "Il tuo inventario è pieno.");
+					engine.gui_->Message(TCODColor::red, "Il tuo inventario e\' pieno.");
 				}
 			}
 		}
 		if (!found) {
-			engine.gui_->Message(TCODColor::lightGrey, "Non c\'è nulla che possa essere raccolto.");
+			engine.gui_->Message(TCODColor::lightGrey, "Non c\'e\' nulla che possa essere raccolto.");
 		}
 		engine.gameStatus = Engine::NEW_TURN;
 	}
@@ -236,8 +232,8 @@ Actor *PlayerAi::ChooseFromInventory(Actor *owner)
 	con.setDefaultForeground(TCODColor::white);
 	int32_t shortcut='a';
 	int32_t y = 1;
-	for (Actor **it=owner->container_->inventory.begin(); it != owner->container_->inventory.end(); it++) {
-		Actor *actor = *it;
+
+	for (Actor *actor : owner->container_->inventory) {
 		con.print(2, y, "(%c) %s", shortcut, actor->name_);
 		y++;
 		shortcut++;
