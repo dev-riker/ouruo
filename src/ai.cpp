@@ -313,11 +313,35 @@ void PlayerAi::DisplayCharacterSheet(Actor *owner)
 	con.setDefaultForeground(TCODColor::darkRed);
 	con.print(25, currRow, "Basic Attributes");
 	con.setDefaultForeground(TCODColor::white);
+	currRow++;
+	PrintAttributeOnCharacterSheet(con, (Attribute *) owner->destructible_->mobileClass_.basicAttributes_.strength_.get(), currRow, 25);
+	currRow++;
+	PrintAttributeOnCharacterSheet(con, (Attribute *) owner->destructible_->mobileClass_.basicAttributes_.intelligence_.get(), currRow, 25);
+	currRow++;
+	PrintAttributeOnCharacterSheet(con, (Attribute *) owner->destructible_->mobileClass_.basicAttributes_.willpower_.get(), currRow, 25);
+	currRow++;
+	PrintAttributeOnCharacterSheet(con, (Attribute *) owner->destructible_->mobileClass_.basicAttributes_.agility_.get(), currRow, 25);
+	currRow++;
+	PrintAttributeOnCharacterSheet(con, (Attribute *) owner->destructible_->mobileClass_.basicAttributes_.speed_.get(), currRow, 25);
+	currRow++;
+	PrintAttributeOnCharacterSheet(con, (Attribute *) owner->destructible_->mobileClass_.basicAttributes_.endurance_.get(), currRow, 25);
+	currRow++;
+	PrintAttributeOnCharacterSheet(con, (Attribute *) owner->destructible_->mobileClass_.basicAttributes_.personality_.get(), currRow, 25);
+	currRow++;
+	PrintAttributeOnCharacterSheet(con, (Attribute *) owner->destructible_->mobileClass_.basicAttributes_.luck_.get(), currRow, 25);
 
 	currRow += 2;
 	con.setDefaultForeground(TCODColor::darkRed);
 	con.print(25, currRow, "Derived Attributes");
 	con.setDefaultForeground(TCODColor::white);
+	currRow++;
+	PrintAttributeOnCharacterSheet(con, (Attribute *) owner->destructible_->mobileClass_.derivedAttributes_.health_.get(), currRow, 25);
+	currRow++;
+	PrintAttributeOnCharacterSheet(con, (Attribute *) owner->destructible_->mobileClass_.derivedAttributes_.magicka_.get(), currRow, 25);
+	currRow++;
+	PrintAttributeOnCharacterSheet(con, (Attribute *) owner->destructible_->mobileClass_.derivedAttributes_.fatigue_.get(), currRow, 25);
+	currRow++;
+	PrintAttributeOnCharacterSheet(con, (Attribute *) owner->destructible_->mobileClass_.derivedAttributes_.encumbrance_.get(), currRow, 25);
 
 
 	// blit the inventory console on the root console
@@ -329,4 +353,17 @@ void PlayerAi::DisplayCharacterSheet(Actor *owner)
 	TCODSystem::waitForEvent(TCOD_EVENT_KEY_PRESS, &key, NULL, true);
 	if (key.vk == TCODK_CHAR) {
 	}
+}
+
+void PlayerAi::PrintAttributeOnCharacterSheet(TCODConsole &con, Attribute *currAttr, int32_t baseRow, int32_t baseColumn)
+{
+	con.setDefaultForeground(TCODColor::white);
+	con.print(baseColumn, baseRow, "%s:", currAttr->GetName());
+	if (currAttr->GetCurrValue() > currAttr->GetBaseValue()) {
+		con.setDefaultForeground(TCODColor::green);
+	} else if (currAttr->GetCurrValue() < currAttr->GetBaseValue()) {
+		con.setDefaultForeground(TCODColor::red);
+	}
+	con.print(baseColumn + 15, baseRow, "%3d", currAttr->GetCurrValue());
+	con.setDefaultForeground(TCODColor::white);
 }

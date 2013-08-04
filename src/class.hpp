@@ -8,7 +8,9 @@ public:
 	enum class_specialization { combat, stealth, magic };
 
 public:
-	SkillTree skills_;
+	SkillTree 			skills_;
+	BasicAttributes 	basicAttributes_;
+	DerivedAttributes 	derivedAttributes_;
 
 protected:
 	std::vector <std::string> favoredAttributes_;

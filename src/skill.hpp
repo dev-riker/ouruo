@@ -4,19 +4,18 @@
 class Skill : public Attribute
 {
 public:
-// 				Skill(std::string name);
-// 				Skill(char name[]);
 				Skill();
 
 	bool		IsMajor();
 	void		SetMajor(bool newValue);
 
+	/*
 	void		SetValue(int newValue);
 	int			GetValue(void);
+	*/
 
 protected:
 	bool		major_;
-//	int			value_;
 };
 
 class BladeSkill : public Skill

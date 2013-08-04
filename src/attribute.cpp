@@ -52,6 +52,18 @@ Attribute::Attribute()
 	currentValue_ = 0;
 }
 
+Attribute::~Attribute()
+{
+}
+
+void Attribute::AddBaseValueBonus(int32_t bonus)
+{
+	baseValue_ += bonus;
+	if (baseValue_ < 0) {
+		baseValue_ = 0;
+	}
+}
+
 void Attribute::SetBaseValue(int newValue)
 {
 	baseValue_ = newValue;
@@ -61,11 +73,6 @@ int32_t Attribute::GetBaseValue() const
 {
 	return baseValue_;
 }
-
-// void Attribute::SetCurrValue(int newValue)
-// {
-// 	currentValue_ = newValue;
-// }
 
 int32_t Attribute::GetCurrValue() const
 {
@@ -137,7 +144,7 @@ void Attribute::Recompute(void)
 	}
 }
 
-bool Attribute::IsEffectFinished(active_effect effect)
+bool Attribute::IsEffectFinished(active_effect_t effect)
 {
 	bool ret = false;
 
@@ -158,7 +165,7 @@ void Attribute::RoundTick()
 	}
 
 	// Elimina gli effetti che hanno raggiunto la loro durata prefissata (effetti con remainingRounds <= 0 E > EFFECT_INFINITE_ROUNDS)
-	std::vector <active_effect>::iterator newEnd = std::remove_if(effects_.begin(), effects_.end(), std::bind1st(std::mem_fun(&Attribute::IsEffectFinished), this));
+	std::vector <active_effect_t>::iterator newEnd = std::remove_if(effects_.begin(), effects_.end(), std::bind1st(std::mem_fun(&Attribute::IsEffectFinished), this));
 	effects_.erase(newEnd, effects_.end());
 }
 
@@ -180,7 +187,7 @@ bool Attribute::UpdateEffect(effect_type effect, int32_t value, int32_t rounds)
 	}
 
 	if (updated == false) {
-		active_effect tmpEffect;
+		active_effect_t tmpEffect;
 		tmpEffect.effect = effect;
 		tmpEffect.remainingRounds = rounds;
 		tmpEffect.value = value;
@@ -190,3 +197,170 @@ bool Attribute::UpdateEffect(effect_type effect, int32_t value, int32_t rounds)
 
 	return true;
 }
+
+BasicAttributes::BasicAttributes()
+{
+	agility_ =		std::unique_ptr<Agility>		(new Agility());
+	endurance_ =	std::unique_ptr<Endurance>		(new Endurance());
+	intelligence_ =	std::unique_ptr<Intelligence>	(new Intelligence());
+	luck_ =			std::unique_ptr<Luck>			(new Luck());
+	personality_ =	std::unique_ptr<Personality>	(new Personality());
+	speed_ =		std::unique_ptr<Speed>			(new Speed());
+	strength_ =		std::unique_ptr<Strength>		(new Strength());
+	willpower_ =	std::unique_ptr<Willpower>		(new Willpower());
+
+	derivedAttributes_ = nullptr;
+}
+
+BasicAttributes::~BasicAttributes()
+{
+
+}
+
+void BasicAttributes::SetDerivedAttributes(DerivedAttributes *newDerivedAttributes)
+{
+	derivedAttributes_ = newDerivedAttributes;
+}
+
+void BasicAttributes::Recompute()
+{
+	strength_->Recompute();
+	intelligence_->Recompute();
+	willpower_->Recompute();
+	agility_->Recompute();
+	speed_->Recompute();
+	endurance_->Recompute();
+	personality_->Recompute();
+	luck_->Recompute();
+
+	// Calcola il valore degli attributi derivati
+	if (derivedAttributes_ != nullptr) {
+		// Health = endurance_(current_value) * 2 + (endurance_(base_value) / 10) * level
+		// La relazione vera al momento è ben più complicata, da aggiornare con successive modifiche
+		derivedAttributes_->health_->SetBaseValue(endurance_->GetCurrValue() * 2);
+		derivedAttributes_->health_->Recompute();
+		// Magicka = (Intelligence(current_value) * 2) + birthsign_bonus + racial_bonus
+		// La relazione vera al momento è ben più complicata, da aggiornare con successive modifiche
+		derivedAttributes_->magicka_->SetBaseValue(intelligence_->GetCurrValue() * 2);
+		derivedAttributes_->magicka_->Recompute();
+		// Fatigue = Endurance(curr_value) + Strength(curr_value) + Agility(curr_value) + Willpower(curr_value)
+		derivedAttributes_->fatigue_->SetBaseValue(endurance_->GetCurrValue() + strength_->GetCurrValue() + agility_->GetCurrValue() + willpower_->GetCurrValue());
+		derivedAttributes_->fatigue_->Recompute();
+		// Encumbrance = 5 * Strength(curr_value)
+		derivedAttributes_->encumbrance_->SetBaseValue(strength_->GetCurrValue() * 5);
+		derivedAttributes_->encumbrance_->Recompute();
+	}
+}
+
+DerivedAttributes::DerivedAttributes()
+{
+	health_ = 		std::unique_ptr <Health> 		(new Health());
+	magicka_ = 		std::unique_ptr <Magicka> 		(new Magicka());
+	fatigue_ = 		std::unique_ptr <Fatigue> 		(new Fatigue());
+	encumbrance_ = 	std::unique_ptr <Encumbrance> 	(new Encumbrance());
+}
+
+DerivedAttributes::~DerivedAttributes()
+{
+
+}
+
+NPCAttributes::NPCAttributes()
+{
+	aggression_ = 		std::unique_ptr <Aggression> 		(new Aggression());
+	confidence_ = 		std::unique_ptr <Confidence> 		(new Confidence());
+	disposition_ = 		std::unique_ptr <Disposition> 		(new Disposition());
+	energyLevel_ = 		std::unique_ptr <EnergyLevel> 		(new EnergyLevel());
+	responsibility_ = 	std::unique_ptr <Responsibility> 	(new Responsibility());
+}
+
+NPCAttributes::~NPCAttributes()
+{
+
+}
+
+Agility::Agility()
+{
+	name_ = "Agility";
+}
+
+Endurance::Endurance()
+{
+	name_ = "Endurance";
+}
+
+Intelligence::Intelligence()
+{
+	name_ = "Intelligence";
+}
+
+Luck::Luck()
+{
+	name_ = "Luck";
+}
+
+Personality::Personality()
+{
+	name_ = "Personality";
+}
+
+Speed::Speed()
+{
+	name_ = "Speed";
+}
+
+Strength::Strength()
+{
+	name_ = "Strength";
+}
+
+Willpower::Willpower()
+{
+	name_ = "Willpower";
+}
+
+Health::Health()
+{
+	name_ = "Health";
+}
+
+Magicka::Magicka()
+{
+	name_ = "Magicka";
+}
+
+Fatigue::Fatigue()
+{
+	name_ = "Fatigue";
+}
+
+Encumbrance::Encumbrance()
+{
+	name_ = "Encumbrance";
+}
+
+Aggression::Aggression()
+{
+	name_ = "Aggression";
+}
+
+Confidence::Confidence()
+{
+	name_ = "Confidence";
+}
+
+Disposition::Disposition()
+{
+	name_ = "Disposition";
+}
+
+EnergyLevel::EnergyLevel()
+{
+	name_ = "EnergyLevel";
+}
+
+Responsibility::Responsibility()
+{
+	name_ = "Responsibility";
+}
+

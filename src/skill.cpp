@@ -16,16 +16,6 @@ void Skill::SetMajor(bool newValue)
 	major_ = newValue;
 }
 
-// void Skill::SetValue(int newValue)
-// {
-// 	baseValue_ = newValue;
-// }
-// 
-// int Skill::GetValue()
-// {
-// 	return value_;
-// }
-
 BladeSkill::BladeSkill()
 {
 	name_ = "Blade";
@@ -185,7 +175,7 @@ bool SkillTree::AddMajorSkill(Skill *newMajorSkill)
 {
 	bool ret = false;
 
-	// Controlla che non si sia già inserita una skill minore o maggiore dello stesso tipo nella lista
+	// Controlla che non si sia giï¿½ inserita una skill minore o maggiore dello stesso tipo nella lista
 	if ((majorSkills_.count(newMajorSkill->GetName()) == 0) && (minorSkills_.count(newMajorSkill->GetName()) == 0))
 	{
 		majorSkills_[newMajorSkill->GetName()] = newMajorSkill;
@@ -199,7 +189,7 @@ bool SkillTree::AddMinorSkill(Skill *newMinorSkill)
 {
 	bool ret = false;
 
-	// Controlla che non si sia già inserita una skill minore o maggiore dello stesso tipo nella lista
+	// Controlla che non si sia giï¿½ inserita una skill minore o maggiore dello stesso tipo nella lista
 	if ((majorSkills_.count(newMinorSkill->GetName()) == 0) && (minorSkills_.count(newMinorSkill->GetName()) == 0))
 	{
 		minorSkills_[newMinorSkill->GetName()] = newMinorSkill;

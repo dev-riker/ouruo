@@ -78,6 +78,8 @@ protected:
 	void	HandleActionKey(Actor *owner, int32_t ascii);
 	Actor	*ChooseFromInventory(Actor *owner);
 	void	DisplayCharacterSheet(Actor *owner);
+private:
+	void	PrintAttributeOnCharacterSheet(TCODConsole &con, Attribute *currAttr, int32_t baseRow, int32_t baseColumn);
 };
 
 #endif // _AI_HPP_

@@ -9,9 +9,9 @@ CPP=clang++
 TEMP=/tmp
 .SUFFIXES: .o .h .c .hpp .cpp
 
-$(TEMP)/ouruo/debug/%.o : $(SRCDIR)/%.cpp
+$(TEMP)/ouruo/debug/%.o : $(SRCDIR)/%.cpp $(SRCDIR)/%.hpp
 	$(CPP) $(CFLAGS) -g -stdlib=libc++ -o $@ -c $< 
-$(TEMP)/ouruo/release/%.o : $(SRCDIR)/%.cpp
+$(TEMP)/ouruo/release/%.o : $(SRCDIR)/%.cpp $(SRCDIR)/%.hpp
 	$(CPP) $(CFLAGS) -O3 -stdlib=libc++ -o $@ -c $< 
 
 CPP_OBJS_DEBUG= \
